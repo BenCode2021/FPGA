@@ -1,0 +1,23 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use work.ALU_unit.all;
+
+entity main is
+port( a,b 	: 	in std_logic_vector(7 downto 0);
+		a0,a1,b0,b1,c0,c1,d0,d1,e0,e1,f0,f1,g0,g1	: out std_logic);
+end main;
+
+architecture add of main is
+signal stemp : std_logic_vector(7 downto 0);
+signal ctemp : std_logic_vector(8 downto 0);
+begin
+	stage0: fulladd port map (ctemp(0),a(0),b(0),stemp(0),ctemp(1));
+	stage1: fulladd port map (ctemp(1),a(1),b(1),stemp(1),ctemp(2));
+	stage2: fulladd port map (ctemp(2),a(2),b(2),stemp(2),ctemp(3));
+	stage3: fulladd port map (ctemp(3),a(3),b(3),stemp(3),ctemp(4));
+	stage4: fulladd port map (ctemp(4),a(4),b(4),stemp(4),ctemp(5));
+	stage5: fulladd port map (ctemp(5),a(5),b(5),stemp(5),ctemp(6));
+	stage6: fulladd port map (ctemp(6),a(6),b(6),stemp(6),ctemp(7));
+	stage7: fulladd port map (ctemp(7),a(7),b(7),stemp(7),ctemp(8));
+	stage8: hex port map(stemp(0),stemp(1),stemp(2),stemp(3),stemp(4),stemp(5),stemp(6),stemp(7),a0,a1,b0,b1,c0,c1,d0,d1,e0,e1,f0,f1,g0,g1);
+end add;
