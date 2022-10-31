@@ -1,0 +1,28 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use work.ALU_unit.all;
+
+entity ALU is
+port( Cin	: in std_logic;
+		x,y 			: in std_logic_vector(6 downto 0);
+		ALUop 		: in std_logic_vector(3 downto 0);
+		s 			: out std_logic_vector(6 downto 0);
+		Cout 		: out std_logic);
+end ALU;
+
+architecture ALU_run of ALU is
+signal or_r,and_r,add_r:std_logic_vector(6 downto 0);
+signal a,b,carry:std_logic_vector(6 downto 0);
+	for i in 0 to 6 generate
+		a(i)<=ALUop(3) xor x(i);
+		b(i)<=ALUop(2) xor y(i);
+		or_r(i)<= a(i) or b(i);
+		and_r(i)<= a(i) and b(i);
+		fulladd port map(Cin,a(i),b(i),add_r(i),carry(i));
+		with ALUop(1 downto 0) select
+		s(i) <= and_r when "00",
+		s(i) <= or_r when"01",
+		s(i) <= add_r when"10",
+		s(i)<='0' when others;
+	end generate;
+end ALU_run;
