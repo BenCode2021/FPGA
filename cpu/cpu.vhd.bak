@@ -1,0 +1,85 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use work.all_package.all;
+
+entity hw is
+generic(N:integer:=16);
+port( clk,clear 	: in std_logic;
+		divisor,divident 		: in std_logic_vector(7 downto 0);
+		remainder,quotient 	: out std_logic_vector(7 downto 0);
+		output0,output1,output2,output3 : out std_logic_vector(6 downto 0));
+end hw;
+
+
+architecture func of hw is
+
+type state_type is (A,B,C,D,E,F);
+signal y_present,y_next : state_type;
+signal w,done : std_logic;
+signal divisor_temp : std_logic_vector(N-1 downto 0);
+signal remainder_temp,quotient_temp : std_logic_vector(N-1 downto 0);
+
+begin
+process(clk,clear)
+begin
+	if clear='1' then
+			y_present<=A;
+			w<='1';
+			quotient_temp<=(others=>'0');
+			
+			--place dividend in remainder
+			remainder_temp(7 downto 0)<=divident(7 downto 0);
+			remainder_temp(15 downto 8)<=(others=>'0');
+			--shift dividsor
+			divisor_temp(15 downto 8)<=divisor(7 downto 0);
+			divisor_temp(7 downto 0)<=(others=>'0');
+			
+	elsif (clk'event and clk='1') then
+
+		case y_present is
+		
+			--
+			when A=>
+				if w='1' then
+					y_present<=B;
+					remainder_temp<=remainder_temp - divisor_temp;
+				end if;
+				
+			--
+			when B=>
+				if remainder_temp(15)='0' then
+					y_present<=C;
+				elsif remainder_temp(15)='1' then
+					y_present<=D;
+				end if;
+					
+			--			
+			when C=>
+				
+			
+			--S2b(ok)
+			when D=>	
+				
+			
+			--S3
+			when E=>
+				
+				
+			--S4(test)
+			when F=>
+				
+				
+				
+		end case;
+	end if;
+end process;
+
+remainder<=remainder_temp(7 downto 0);
+quotient<=quotient_temp(7 downto 0);
+stage0 : hex port map(remainder_temp(3 downto 0),output0);
+stage1 : hex port map(remainder_temp(7 downto 4),output1);
+stage2 : hex port map(quotient_temp(3 downto 0),output2);
+stage3 : hex port map(quotient_temp(7 downto 4),output3);
+
+end func;

@@ -1,0 +1,26 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use work.ALU_unit.all;
+
+entity BCD_adder is
+port( Cin,x0,y0,x1,y1,x2,y2,x3,y3	: in std_logic;
+		s0,s1,s2,s3,Cout	: out std_logic);
+end BCD_adder;
+
+architecture four_bit_add of BCD_adder is
+signal carry : std_logic_vector(6 downto 0);
+signal sum : std_logic_vector(6 downto 0);
+begin
+	add0: fulladd port map (Cin,x0,y0,sum(0),carry(0));
+	add1: fulladd port map (carry(0),x1,y1,sum(1),carry(1));
+	add2: fulladd port map (carry(1),x2,y2,sum(2),carry(2));
+	add3: fulladd port map (carry(2),x3,y3,sum(3),carry(3));
+	Cout <= (sum(3) and (sum(2) or sum(1))) or carry(3);
+	add4: fulladd port map ('0',(sum(3) and (sum(2) or sum(1))) or carry(3),sum(1),sum(4),carry(4));
+	add5: fulladd port map (carry(4),(sum(3) and (sum(2) or sum(1))) or carry(3),sum(2),sum(5),carry(5));
+	s0 <= sum(0);
+	s1 <= sum(4);
+	s2 <= sum(5);
+	s3 <= sum(3) xor carry(5);
+	
+end four_bit_add;
